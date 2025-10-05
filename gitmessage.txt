@@ -1,0 +1,26 @@
+### Type
+# feat      -> new feature
+# fix       -> bug fix
+# research  -> experimental code addition (may be non-functional)
+# refactor  -> code refactoring
+# docs      -> documentation update
+# test      -> addition or modification of tests
+# conf      -> configuration file change
+
+### Subject
+# A short description of the change.
+# Must be written in the past participle (e.g., Added, Fixed, Updated).
+# Reference the related issue (if any) using: #<issue_id>
+#
+# Example:
+# conf: Updated docker-compose.yml #1
+
+<type>: <subject> #<issue_id>
+
+### Body (optional)
+# Use this section if the subject line alone is not descriptive enough.
+# Explain what was done and why, including any relevant context or implications.
+#
+# Example:
+# - Updated docker-compose.yml to fix volume mount issues.
+# - Aligned service names with new naming convention.
