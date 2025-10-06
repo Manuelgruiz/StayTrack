@@ -38,5 +38,5 @@ StayTrack/
 
 ## Screenshots
 - [Updated GitHub profile](../screenshots/Screenshot_profile.png)
-- [Enabled 2FA](../screenshots/Screenshot_2fa.png)
+- [Enabled 2FA](../screenshots/Screenshot_2FA.png)
 - [Public SSH key](../screenshots/Screenshot_ssh.png)
