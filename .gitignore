@@ -81,14 +81,11 @@ build/
 
 # =========================
 # Environment files (DO NOT COMMIT SECRETS)
-# Keep only example files tracked
 # =========================
-# root & subfolders
 .env
 .env.*
 **/.env
 **/.env.*
-# allow templates
 !.env.example
 !**/.env.example
 
@@ -96,5 +93,3 @@ build/
 # Docker
 # =========================
 docker-*.log
-
-
