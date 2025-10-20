@@ -93,3 +93,5 @@ build/
 # Docker
 # =========================
 docker-*.log
+
+test_db.sqlite
