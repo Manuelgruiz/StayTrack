@@ -1,10 +1,11 @@
 name: Run Tests
 
 on:
-  push:
-    branches: [ main, dev ]
-  pull_request:
-    branches: [ main, dev ]
+  push:       
+    branches: ["*"]
+  pull_request:  
+    branches: ["*"]
+  workflow_dispatch:  
 
 jobs:
   backend-tests:
