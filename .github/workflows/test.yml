@@ -1,11 +1,11 @@
 name: Run Tests
 
 on:
-  push:       
+  push:
     branches: ["*"]
-  pull_request:  
+  pull_request:
     branches: ["*"]
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
   backend-tests:
@@ -27,4 +27,6 @@ jobs:
           pip install pytest httpx
 
       - name: Run backend tests
+        env:
+          DATABASE_URL: sqlite:///./test_db.sqlite
         run: pytest -v --disable-warnings
