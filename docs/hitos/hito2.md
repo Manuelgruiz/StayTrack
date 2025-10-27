@@ -63,67 +63,75 @@ Estos tests verifican el correcto funcionamiento de los endpoints, las respuesta
 ### ⚙️ Ejecución automática en GitHub Actions:
 - [Ejecucion del Github Actions](../screenshots/CI-Github.png)
 
+### 🧪 Implementación de tests
 
-### Implementación de test:
+---
 
-1. test_read_root()
-👉 Qué hace:
-Comprueba que la ruta principal (/) responda bien.
-🔍 Espera:
+#### 1. `test_read_root()`
 
-Código 200.
-JSON con {"message": "Welcome to StayTrack!"}.
-✅ Significa:
-El servidor está funcionando y responde correctamente en la raíz.
-2. test_health_check()
-👉 Qué hace:
-Verifica que la ruta /health indique que todo está bien.
-🔍 Espera:
+**👉 Qué hace:**  
+Comprueba que la ruta principal (`/`) responda bien.
 
-Código 200.
-JSON con {"status": "ok"}.
-✅ Significa:
-La API puede confirmar que está activa.
-3. test_create_user()
-👉 Qué hace:
+**🔍 Espera:**  
+- Código **200**  
+- JSON con:  
+  ```json
+  {"message": "Welcome to StayTrack!"}
+
+
+
+#### 2. `test_create_user()`
+
+**👉 Qué hace:**  
 Envía datos de un usuario nuevo al endpoint /users/.
-🔍 Espera:
 
-Código 200.
-Que devuelva los datos del usuario creado y un campo id.
-✅ Significa:
-La creación de usuarios funciona correctamente.
-4. test_list_users()
-👉 Qué hace:
+**🔍 Espera:**  
+- Código **200**  
+- Que devuelva los datos del usuario creado y un campo id.
+
+
+#### 3. `test_health_check()`
+
+**👉 Qué hace:**  
+Verifica que la ruta /health indique que todo está bien.
+
+**🔍 Espera:**  
+- Código **200**  
+- JSON.
+
+
+#### 4. `test_list_users()`
+
+**👉 Qué hace:**  
 Solicita la lista de todos los usuarios en /users/.
-🔍 Espera:
 
-Código 200.
-Una lista JSON con al menos un usuario.
-✅ Significa:
-El endpoint para listar usuarios funciona bien.
-5. test_add_food()
-👉 Qué hace:
+**🔍 Espera:**  
+- Código **200**  
+- Una lista JSON con al menos un usuario.
+
+
+
+#### 5. `test_add_food()`
+
+**👉 Qué hace:**  
 Primero crea un usuario y luego agrega un alimento con /users/{id}/foods/.
-🔍 Espera:
 
-Código 200.
-JSON con los datos del alimento (nombre, calorías, etc.).
-✅ Significa:
-Se pueden registrar alimentos para un usuario.
-6. test_add_exercise()
-👉 Qué hace:
+**🔍 Espera:**  
+- Código **200**  
+- JSON con los datos del alimento (nombre, calorías, etc.).
+
+
+
+
+#### 6. `test_add_exercise()`
+
+**👉 Qué hace:**  
 Crea un usuario y agrega un ejercicio con /users/{id}/exercises/.
-🔍 Espera:
 
-Código 200.
-JSON con los datos del ejercicio (nombre, duración, calorías, etc.).
-✅ Significa:
-Se pueden registrar ejercicios para un usuario.
-🧠 En resumen
-Estos tests comprueban que:
-La API responde correctamente.
-Se pueden crear usuarios.
-Se pueden listar usuarios.
-Se pueden agregar alimentos y ejercicios a cada usuario.
-Son pruebas básicas pero muy útiles para asegurar que la aplicación funciona como debe.
+**🔍 Espera:**  
+- Código **200**  
+- JSON con los datos del ejercicio (nombre, duración, calorías, etc.).
+
+
+
+
