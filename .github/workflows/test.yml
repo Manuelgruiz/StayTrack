@@ -8,25 +8,75 @@ on:
   workflow_dispatch:
 
 jobs:
-  backend-tests:
+  microservice-tests:
+    name: "${{ matrix.service }} tests"
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: user-service
+            req: app/services/user-service/requirements.txt
+            testpath: app/services/user-service/tests
+          - service: tracker-service
+            req: app/services/tracker-service/requirements.txt
+            testpath: app/services/tracker-service/tests
+          - service: goals-service
+            req: app/services/goals-service/requirements.txt
+            testpath: app/services/goals-service/tests
+          - service: catalog-service
+            req: app/services/catalog-service/requirements.txt
+            testpath: app/services/catalog-service/tests
+          - service: stats-service
+            req: app/services/stats-service/requirements.txt
+            testpath: app/services/stats-service/tests
+            env_extra: "TRACKER_SVC=http://localhost:8002"
+          - service: auth-service
+            req: app/services/auth-service/requirements.txt
+            testpath: app/services/auth-service/tests
+            env_extra: "JWT_SECRET=testsecret JWT_ALG=HS256 JWT_TTL_SECONDS=3600 USER_SVC=http://localhost:8001"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-${{ hashFiles(matrix.req) }}
+          restore-keys: |
+            ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest httpx
+          # Requisitos del servicio
+          pip install -r "${{ matrix.req }}"
+          # Utilidades de test comunes (por si algún requirements no las incluye)
+          pip install pytest httpx respx
+          # Opcional: si usas bcrypt/passlib en auth y no lo tienes fijado:
+          # pip install "bcrypt>=4.0.1,<5" "passlib[bcrypt]==1.7.4"
 
-      - name: Run backend tests
+      - name: Export service-specific env
+        if: ${{ matrix.env_extra != '' }}
         env:
+          MATRIX_ENV: ${{ matrix.env_extra }}
+        run: |
+          # matrix.env_extra es una línea "KEY=VALUE KEY2=VALUE2 ..."
+          # la expandimos a varias líneas en $GITHUB_ENV
+          echo "$MATRIX_ENV" | tr ' ' '\n' >> "$GITHUB_ENV"
+
+      - name: Run tests (${{ matrix.service }})
+        env:
+          # No usamos Postgres en tests; por si algún servicio lo lee:
           DATABASE_URL: sqlite:///./test_db.sqlite
-        run: pytest -v --disable-warnings
+        run: |
+          pytest -v "${{ matrix.testpath }}" --disable-warnings
