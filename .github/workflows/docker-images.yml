@@ -19,38 +19,38 @@ jobs:
       matrix:
         include:
           - name: gateway
-            context: .
-            dockerfile: ./app/gateway/Dockerfile
+            context: ./app/gateway
+            dockerfile: Dockerfile
             image: staytrack-gateway
 
           - name: auth-service
-            context: .
-            dockerfile: ./app/services/auth-service/Dockerfile
+            context: ./app/services/auth-service
+            dockerfile: Dockerfile
             image: staytrack-auth-service
 
           - name: user-service
-            context: .
-            dockerfile: ./app/services/user-service/Dockerfile
+            context: ./app/services/user-service
+            dockerfile: Dockerfile
             image: staytrack-user-service
 
           - name: catalog-service
-            context: .
-            dockerfile: ./app/services/catalog-service/Dockerfile
+            context: ./app/services/catalog-service
+            dockerfile: Dockerfile
             image: staytrack-catalog-service
 
           - name: goals-service
-            context: .
-            dockerfile: ./app/services/goals-service/Dockerfile
+            context: ./app/services/goals-service
+            dockerfile: Dockerfile
             image: staytrack-goals-service
 
           - name: stats-service
-            context: .
-            dockerfile: ./app/services/stats-service/Dockerfile
+            context: ./app/services/stats-service
+            dockerfile: Dockerfile
             image: staytrack-stats-service
 
           - name: tracker-service
-            context: .
-            dockerfile: ./app/services/tracker-service/Dockerfile
+            context: ./app/services/tracker-service
+            dockerfile: Dockerfile
             image: staytrack-tracker-service
 
     steps:
