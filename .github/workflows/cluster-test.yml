@@ -1,0 +1,52 @@
+name: Cluster Test
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  cluster-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start cluster with Docker Compose
+        run: |
+          cd app
+          docker compose up -d --build
+
+      - name: Wait for gateway to be ready
+        run: |
+          cd app
+          echo "Waiting for gateway at http://localhost:8000..."
+          for i in {1..30}; do
+            if curl -sSf http://localhost:8000/docs > /dev/null; then
+              echo "Gateway is UP ✅"
+              exit 0
+            fi
+            echo "Still waiting... ($i)"
+            sleep 5
+          done
+          echo "Gateway did not start in time ❌"
+          docker compose logs
+          exit 1
+
+      - name: Hit some endpoints
+        run: |
+          # Comprueba que /docs responde 200
+          curl -sSf http://localhost:8000/docs > /dev/null
+          echo "Docs endpoint OK"
+
+          # Si tienes un /health o similar, descomenta:
+          # curl -sSf http://localhost:8000/health > /dev/null
+          # echo "Health endpoint OK"
+
+      - name: Stop cluster
+        if: always()
+        run: |
+          cd app
+          docker compose down -v
