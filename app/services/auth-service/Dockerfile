@@ -6,15 +6,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Instalar dependencias
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código del gateway
 COPY . .
 
-# Puerto interno
 EXPOSE 8000
 
-# Arrancar gateway (app.py -> variable app)
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Si tu app está en app/main.py y se llama "app":
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

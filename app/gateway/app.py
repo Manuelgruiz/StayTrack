@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Query, Header, Depends
 import httpx, os, jwt
+from fastapi.middleware.cors import CORSMiddleware
 
 USER_SVC = os.getenv("USER_SVC", "http://localhost:8001")
 TRACKER_SVC = os.getenv("TRACKER_SVC", "http://localhost:8002")
@@ -11,6 +12,16 @@ JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_ALG = os.getenv("JWT_ALG", "HS256")
 
 app = FastAPI(title="StayTrack Gateway")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,          
+    allow_methods=["*"],             
+    allow_headers=["*"],             
+)
+
 
 def auth_user(user_id: int, authorization: str | None = Header(default=None)):
     if not authorization or not authorization.lower().startswith("bearer "):

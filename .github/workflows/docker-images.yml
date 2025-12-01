@@ -1,0 +1,70 @@
+name: Build and publish Docker images
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gateway
+            context: ./app/gateway
+            image: staytrack-gateway
+
+          - name: auth-service
+            context: ./app/services/auth-service
+            image: staytrack-auth-service
+
+          - name: user-service
+            context: ./app/services/user-service
+            image: staytrack-user-service
+
+          - name: catalog-service
+            context: ./app/services/catalog-service
+            image: staytrack-catalog-service
+
+          - name: goals-service
+            context: ./app/services/goals-service
+            image: staytrack-goals-service
+
+          - name: stats-service
+            context: ./app/services/stats-service
+            image: staytrack-stats-service
+
+          - name: tracker-service
+            context: ./app/services/tracker-service
+            image: staytrack-tracker-service
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push ${{ matrix.name }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.sha }}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api/auth";  
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -13,11 +14,13 @@ export default function LoginForm() {
     e.preventDefault();
     setErr("");
     setLoading(true);
+
     try {
-      // Aquí conectarías a tu backend (JWT). Por ahora, simulamos OK:
-      await new Promise((r) => setTimeout(r, 600));
+     
+      await login(email, password);
       nav("/dashboard");
-    } catch (e: any) {
+    } catch (error: any) {
+      console.error(error);
       setErr("Invalid credentials");
     } finally {
       setLoading(false);

@@ -1,8 +1,22 @@
 import axios from "axios";
 
+const baseURL =
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:8000" : "/");
+
+console.log("[API] baseURL =", baseURL); // <-- mira la consola del navegador
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000",
-  timeout: 10000,
+  baseURL,
+  timeout: 12000,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("st_token");
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export default api;
