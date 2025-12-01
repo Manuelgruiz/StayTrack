@@ -10,14 +10,24 @@ jobs:
   cluster-test:
     runs-on: ubuntu-latest
 
+    env:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_ALG: HS256
+      JWT_TTL_SECONDS: 3600
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Start cluster with Docker Compose
+      - name: Start cluster with Docker Compose (CI file)
         run: |
           cd app
-          docker compose up -d --build
+          docker compose -f compose.ci.yaml up -d --build
 
       - name: Wait for gateway to be ready
         run: |
@@ -32,21 +42,16 @@ jobs:
             sleep 5
           done
           echo "Gateway did not start in time ❌"
-          docker compose logs
+          docker compose -f compose.ci.yaml logs
           exit 1
 
       - name: Hit some endpoints
         run: |
-          # Comprueba que /docs responde 200
           curl -sSf http://localhost:8000/docs > /dev/null
           echo "Docs endpoint OK"
-
-          # Si tienes un /health o similar, descomenta:
-          # curl -sSf http://localhost:8000/health > /dev/null
-          # echo "Health endpoint OK"
 
       - name: Stop cluster
         if: always()
         run: |
           cd app
-          docker compose down -v
+          docker compose -f compose.ci.yaml down -v
