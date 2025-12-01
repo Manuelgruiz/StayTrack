@@ -157,18 +157,39 @@ Notas:
 - El volumen `db_data` persiste los datos entre reinicios.
 
 ---
+## Tests del clúster (CI/CD para comprobar el funcionamiento del despliegue)
 
-## Tests del clúster (CI automatizado)
-Workflow de tests:
-- `.github/workflows/tests.yml`
-- Ejecuta `pytest` para cada microservicio (matrix)
-- Instala dependencias por servicio
-- Simula entornos usando SQLite para evitar Postgres en CI
-- Se ejecuta en push, PR y manualmente
+Además de los tests unitarios por microservicio, se añade un pipeline de integración que valida que el clúster completo arranca y que el Gateway responde.
 
-Objetivo: validar que cada microservicio funciona independientemente del entorno real.
+Archivo de workflow:
+- `.github/workflows/cluster-test.yml`
 
----
+Resumen de pasos
+1. Arranque del clúster
+- Usa `docker-compose -f compose.ci.yaml up -d --build`.
+- `compose.ci.yaml` es una versión preparada para CI que recibe variables vía GitHub Secrets (no depende de ficheros `.env` locales).
+- Incluye: PostgreSQL, todos los microservicios y el API Gateway.
+
+2. Espera y comprobación de salud del Gateway
+- Health check que comprueba hasta 30 veces `http://localhost:8000/docs` con reintentos y delays entre intentos.
+- Si no responde, el workflow vuelca logs completos del clúster para diagnóstico:
+    - `docker-compose -f compose.ci.yaml logs --no-color --timestamps`
+    - `docker ps -a` / `docker-compose -f compose.ci.yaml ps`
+- Objetivo: detectar fallos de dependencias, inicio de servicios o configuración de BBDD/entorno.
+
+3. Peticiones reales al Gateway
+- Ejecuta peticiones HTTP reales (por ejemplo con `curl`) tras el health check:
+    - `curl -sS -f http://localhost:8000/docs`
+- Verifica que el servidor responde, que el router del Gateway está cargado y que las dependencias iniciales están disponibles.
+
+4. Apagado y limpieza
+- Al finalizar (éxito o fallo) se realiza limpieza:
+    - `docker-compose -f compose.ci.yaml down --volumes --remove-orphans`
+- Garantiza que el runner queda limpio para siguientes ejecuciones.
+
+- Variables sensibles (credenciales BBDD, tokens) deben inyectarse desde GitHub Secrets en el workflow.
+- Este test valida arranque e integración básica; no sustituye a pruebas funcionales más profundas (e2e) pero detecta fallos críticos de despliegue.
+- Configura timeouts y reintentos según tiempos de arranque reales de los servicios para reducir falsos positivos.
 
 ## Conclusión
 El proyecto cumple los requisitos del Hito 4:
