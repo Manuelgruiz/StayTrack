@@ -20,37 +20,30 @@ jobs:
         include:
           - name: gateway
             context: ./app/gateway
-            dockerfile: Dockerfile
             image: staytrack-gateway
 
           - name: auth-service
             context: ./app/services/auth-service
-            dockerfile: Dockerfile
             image: staytrack-auth-service
 
           - name: user-service
             context: ./app/services/user-service
-            dockerfile: Dockerfile
             image: staytrack-user-service
 
           - name: catalog-service
             context: ./app/services/catalog-service
-            dockerfile: Dockerfile
             image: staytrack-catalog-service
 
           - name: goals-service
             context: ./app/services/goals-service
-            dockerfile: Dockerfile
             image: staytrack-goals-service
 
           - name: stats-service
             context: ./app/services/stats-service
-            dockerfile: Dockerfile
             image: staytrack-stats-service
 
           - name: tracker-service
             context: ./app/services/tracker-service
-            dockerfile: Dockerfile
             image: staytrack-tracker-service
 
     steps:
@@ -71,7 +64,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
           push: true
           tags: |
             ghcr.io/manuelgruiz/${{ matrix.image }}:latest
