@@ -38,5 +38,5 @@ RUN echo 'server { \
 
 EXPOSE 80
 
-# Este comando busca la IP del DNS de Render e inicia Nginx
-CMD ["sh", "-c", "export RESOLVER_IP=$(grep nameserver /etc/resolv.conf | head -n1 | awk '{print $2}') && sed -i \"s/RENDER_RESOLVER_IP/$RESOLVER_IP/g\" /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# Buscamos el nameserver del sistema y lo inyectamos en la config de Nginx
+CMD ["sh", "-c", "DNS_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}' | head -n1); DNS_IP=${DNS_IP:-8.8.8.8}; sed -i \"s|RENDER_RESOLVER_IP|$DNS_IP|g\" /etc/nginx/conf.d/default.conf && echo \"Using resolver $DNS_IP\" && nginx -g 'daemon off;'"]
