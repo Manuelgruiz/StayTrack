@@ -12,27 +12,29 @@ FROM nginx:alpine
 # Copy static files
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Nginx config with Proxy to Gateway
+# Nginx config inteligente: se adapta a Local o Render
 RUN echo 'server { \
     listen 80; \
-    server_name localhost; \
-    \
     location / { \
         root /usr/share/nginx/html; \
         index index.html index.htm; \
         try_files $uri $uri/ /index.html; \
     } \
-    \
-    # Proxy API requests to the gateway container \
-    # This avoids CORS issues and keeps everything on port 80 \
     location /v1 { \
-        proxy_pass http://staytrack-gateway:8000; \
-        proxy_set_header Host $host; \
+        resolver RENDER_RESOLVER_IP valid=30s; \
+        proxy_pass ${VITE_API_URL}; \
+        proxy_ssl_server_name on; \
+        proxy_set_header Host $proxy_host; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
         proxy_set_header X-Forwarded-Proto $scheme; \
     } \
-}' > /etc/nginx/conf.d/default.conf
+}' > /etc/nginx/conf.d/config.template
 
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# Al arrancar: 
+# 1. Busca el DNS del sistema (Docker o Render)
+# 2. Inyecta la URL del Gateway
+# 3. Inicia Nginx
+CMD ["sh", "-c", "export DNS_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}' | head -n1); sed -i \"s|RENDER_RESOLVER_IP|$DNS_IP|g\" /etc/nginx/conf.d/config.template && envsubst '${VITE_API_URL}' < /etc/nginx/conf.d/config.template > /etc/nginx/conf.d/default.conf && echo \"Using resolver $DNS_IP and proxying to $VITE_API_URL\" && nginx -g 'daemon off;'"]

@@ -15,10 +15,10 @@ services:
     build: ./app/services/auth-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
-      JWT_SECRET: ${JWT_SECRET}
+      AUTH_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-12345}
       JWT_ALG: HS256
-      USER_SVC_URL: http://user-service:8001
+      USER_SVC: http://user-service:8000
     depends_on:
       - db
     networks:
@@ -28,7 +28,7 @@ services:
     build: ./app/services/user-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      USER_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
     depends_on:
       - db
     networks:
@@ -38,7 +38,7 @@ services:
     build: ./app/services/catalog-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      CATALOG_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
     depends_on:
       - db
     networks:
@@ -48,7 +48,7 @@ services:
     build: ./app/services/goals-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      GOALS_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
     depends_on:
       - db
     networks:
@@ -58,7 +58,7 @@ services:
     build: ./app/services/stats-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      STATS_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
     depends_on:
       - db
     networks:
@@ -68,23 +68,26 @@ services:
     build: ./app/services/tracker-service
     restart: always
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      TRACKER_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
     depends_on:
       - db
     networks:
       - staytrack-net
 
-  gateway:
+  staytrack-gateway:
     build: ./app/gateway
     restart: always
+    ports:
+      - "8000:8000"
     environment:
-      AUTH_SVC: http://auth-service:8003
-      USER_SVC: http://user-service:8001
-      TRACKER_SVC: http://tracker-service:8002
-      GOALS_SVC: http://goals-service:8004
-      STATS_SVC: http://stats-service:8005
-      CATALOG_SVC: http://catalog-service:8006
-      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SVC: http://auth-service:8000
+      USER_SVC: http://user-service:8000
+      TRACKER_SVC: http://tracker-service:8000
+      GOALS_SVC: http://goals-service:8000
+      STATS_SVC: http://stats-service:8000
+      CATALOG_SVC: http://catalog-service:8000
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-12345}
+      JWT_ALG: HS256
     depends_on:
       - auth-service
       - user-service
@@ -96,8 +99,10 @@ services:
     restart: always
     ports:
       - "80:80"
+    environment:
+      - VITE_API_URL=http://staytrack-gateway:8000
     depends_on:
-      - gateway
+      - staytrack-gateway
     networks:
       - staytrack-net
 

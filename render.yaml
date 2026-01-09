@@ -27,7 +27,7 @@ services:
         fromDatabase:
           name: staytrack-db
           property: connectionString
-      - key: USER_SVC_URL
+      - key: USER_SVC
         value: http://user-service:8000
 
   # Microservicio: User
