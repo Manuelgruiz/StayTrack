@@ -5,6 +5,8 @@ envVarGroups:
         generateValue: true
       - key: JWT_ALG
         value: HS256
+      - key: PORT
+        value: "8000"
 
 databases:
   - name: staytrack-db
@@ -21,7 +23,7 @@ services:
     rootDir: ./app/services/auth-service
     envVars:
       - fromGroup: staytrack-shared
-      - key: DATABASE_URL
+      - key: AUTH_DATABASE_URL
         fromDatabase:
           name: staytrack-db
           property: connectionString
@@ -35,7 +37,8 @@ services:
     runtime: docker
     rootDir: ./app/services/user-service
     envVars:
-      - key: DATABASE_URL
+      - fromGroup: staytrack-shared
+      - key: USER_DATABASE_URL
         fromDatabase:
           name: staytrack-db
           property: connectionString
@@ -47,7 +50,8 @@ services:
     runtime: docker
     rootDir: ./app/services/catalog-service
     envVars:
-      - key: DATABASE_URL
+      - fromGroup: staytrack-shared
+      - key: CATALOG_DATABASE_URL
         fromDatabase:
           name: staytrack-db
           property: connectionString
@@ -59,7 +63,8 @@ services:
     runtime: docker
     rootDir: ./app/services/goals-service
     envVars:
-      - key: DATABASE_URL
+      - fromGroup: staytrack-shared
+      - key: GOALS_DATABASE_URL
         fromDatabase:
           name: staytrack-db
           property: connectionString
@@ -71,7 +76,8 @@ services:
     runtime: docker
     rootDir: ./app/services/stats-service
     envVars:
-      - key: DATABASE_URL
+      - fromGroup: staytrack-shared
+      - key: STATS_DATABASE_URL
         fromDatabase:
           name: staytrack-db
           property: connectionString
@@ -83,12 +89,13 @@ services:
     runtime: docker
     rootDir: ./app/services/tracker-service
     envVars:
-      - key: DATABASE_URL
+      - fromGroup: staytrack-shared
+      - key: TRACKER_DATABASE_URL
         fromDatabase:
           name: staytrack-db
           property: connectionString
 
-  # API Gateway (La entrada al Backend)
+  # API Gateway
   - type: web
     name: staytrack-gateway
     plan: free
@@ -109,7 +116,7 @@ services:
       - key: CATALOG_SVC
         value: http://catalog-service
 
-  # Frontend (Vite + Nginx)
+  # Frontend
   - type: web
     name: staytrack-frontend
     plan: free
