@@ -13,7 +13,11 @@ def _build_url() -> str:
     name = os.getenv("DB_NAME", "staytrack_db")
     return f"postgresql+psycopg://{user}:{pwd}@{host}:{port}/{name}"
 
-DATABASE_URL = os.getenv("TRACKER_DATABASE_URL") or _build_url()
+raw_url = os.getenv("TRACKER_DATABASE_URL") or _build_url()
+if raw_url.startswith("postgresql://"):
+    raw_url = raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
+DATABASE_URL = raw_url
+
 
 class Base(DeclarativeBase):
     pass
