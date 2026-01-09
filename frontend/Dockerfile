@@ -6,37 +6,28 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve with Nginx and Proxy Config
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copy static files
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
+COPY --from=build /app/dist .
 
-# Nginx config with Proxy to Gateway
+# Configuración de Nginx simplificada y robusta
 RUN echo 'server { \
     listen 80; \
-    server_name localhost; \
-    \
     location / { \
         root /usr/share/nginx/html; \
-        index index.html index.htm; \
+        index index.html; \
         try_files $uri $uri/ /index.html; \
     } \
-    \
-    # Proxy API requests to the gateway container \
-    # This avoids CORS issues and keeps everything on port 80 \
     location /v1 { \
-        resolver RENDER_RESOLVER_IP valid=30s; \
-        set $backend_service http://staytrack-gateway:8000; \
-        proxy_pass $backend_service; \
+        proxy_pass ${VITE_API_URL}; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
-        proxy_set_header X-Forwarded-Proto $scheme; \
     } \
-}' > /etc/nginx/conf.d/default.conf
+}' > /etc/nginx/conf.d/config.template
 
 EXPOSE 80
 
-# Buscamos el nameserver del sistema y lo inyectamos en la config de Nginx
-CMD ["sh", "-c", "DNS_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}' | head -n1); DNS_IP=${DNS_IP:-8.8.8.8}; sed -i \"s|RENDER_RESOLVER_IP|$DNS_IP|g\" /etc/nginx/conf.d/default.conf && echo \"Using resolver $DNS_IP\" && nginx -g 'daemon off;'"]
+# Usamos envsubst para inyectar la URL real al arrancar
+CMD ["sh", "-c", "REAL_URL=${VITE_API_URL}; if ! echo $REAL_URL | grep -q '^http'; then REAL_URL=\"https://$REAL_URL\"; fi; export VITE_API_URL=$REAL_URL; envsubst '${VITE_API_URL}' < /etc/nginx/conf.d/config.template > /etc/nginx/conf.d/default.conf && echo \"Proxying to $VITE_API_URL\" && nginx -g 'daemon off;'"]
