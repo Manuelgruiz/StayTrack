@@ -26,7 +26,8 @@ RUN echo 'server { \
     # Proxy API requests to the gateway container \
     # This avoids CORS issues and keeps everything on port 80 \
     location /v1 { \
-        proxy_pass http://gateway:8000; \
+        resolver 127.0.0.11 valid=30s; \
+        proxy_pass http://staytrack-gateway:8000; \
         proxy_set_header Host $host; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
