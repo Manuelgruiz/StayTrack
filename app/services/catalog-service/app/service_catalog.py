@@ -10,10 +10,10 @@ def create_food(db: Session, body: schemas.FoodCreate) -> models.Food:
         db.commit()
     except IntegrityError:
         db.rollback()
-        logger.warning("food_name duplicate", extra={"name": body.name})
+        logger.warning("food_name duplicate", extra={"food_name": body.name})
         raise
     db.refresh(f)
-    logger.info("food_created", extra={"food_id": f.id, "name": f.name})
+    logger.info("food_created", extra={"food_id": f.id, "food_name": f.name})
     return f
 
 def list_foods(db: Session, q: str | None, limit: int, offset: int) -> list[models.Food]:

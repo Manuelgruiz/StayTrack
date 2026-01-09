@@ -108,6 +108,19 @@ services:
     networks:
       - backend
 
+  # ----------- Frontend -----------
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    networks:
+      - backend
+
 # ----------- Volúmenes -----------
 volumes:
   db_data:

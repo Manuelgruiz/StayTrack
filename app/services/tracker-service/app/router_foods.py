@@ -11,5 +11,5 @@ def add_food(user_id: int, body: schemas.FoodLogCreate, db: Session = Depends(ge
     return svc_add_food(db, user_id, body)
 
 @router.get("", response_model=list[schemas.FoodLog])
-def list_foods(user_id: int, limit: int = Query(50, le=200), offset: int = 0, db: Session = Depends(get_db)):
+def list_foods(user_id: int, limit: int = Query(50, le=50000), offset: int = 0, db: Session = Depends(get_db)):
     return svc_list_foods(db, user_id, limit, offset)

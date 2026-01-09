@@ -11,5 +11,5 @@ def add_exercise(user_id: int, body: schemas.ExerciseLogCreate, db: Session = De
     return svc_add_exercise(db, user_id, body)
 
 @router.get("", response_model=list[schemas.ExerciseLog])
-def list_exercises(user_id: int, limit: int = Query(50, le=200), offset: int = 0, db: Session = Depends(get_db)):
+def list_exercises(user_id: int, limit: int = Query(50, le=50000), offset: int = 0, db: Session = Depends(get_db)):
     return svc_list_exercises(db, user_id, limit, offset)

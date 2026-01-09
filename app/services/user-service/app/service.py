@@ -25,3 +25,19 @@ def list_users(db: Session) -> list[models.User]:
     users = db.query(models.User).all()
     logger.info("Listado de usuarios", extra={"count": len(users)})
     return users
+
+def update_user(db: Session, user_id: int, body: schemas.UserCreate) -> models.User | None:
+    user = db.get(models.User, user_id)
+    if not user:
+        return None
+    
+    user.name = body.name
+    user.email = body.email
+    user.age = body.age
+    user.weight = body.weight
+    user.height = body.height
+    
+    db.commit()
+    db.refresh(user)
+    logger.info("Usuario actualizado", extra={"user_id": user_id})
+    return user
