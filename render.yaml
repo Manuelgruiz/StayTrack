@@ -1,11 +1,10 @@
-services:
-  # Base de Datos (PostgreSQL)
-  - type: database
-    name: staytrack-db
+databases:
+  - name: staytrack-db
     plan: free
     databaseName: staytrack_db
     user: staytrack_user
 
+services:
   # Microservicio: Auth
   - type: web
     name: auth-service
