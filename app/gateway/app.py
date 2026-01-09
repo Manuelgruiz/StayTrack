@@ -11,9 +11,10 @@ CATALOG_SVC = os.getenv("CATALOG_SVC", "http://localhost:8006")
 
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_ALG = os.getenv("JWT_ALG", "HS256")
+AUTH_SVC = os.getenv("AUTH_SVC", "http://localhost:8003")
 
 print(f"DEBUG: GATEWAY_CONFIG: USER_SVC={USER_SVC}")
-print(f"DEBUG: GATEWAY_CONFIG: AUTH_SVC={os.getenv('AUTH_SVC')}")
+print(f"DEBUG: GATEWAY_CONFIG: AUTH_SVC={AUTH_SVC}")
 print(f"DEBUG: GATEWAY_CONFIG: TRACKER_SVC={TRACKER_SVC}")
 
 
@@ -95,7 +96,7 @@ async def gw_catalog_get(food_id: int, auth=Depends(verify_token)):
 async def gw_register(body: Register):
     """Register a new user and get authentication token"""
     async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as c:
-        r = await c.post(f"{os.getenv('AUTH_SVC','http://localhost:8003')}/v1/auth/register", json=body.model_dump())
+        r = await c.post(f"{AUTH_SVC}/v1/auth/register", json=body.model_dump())
         if r.is_error:
             try:
                 raise HTTPException(status_code=r.status_code, detail=r.json())
@@ -107,8 +108,8 @@ async def gw_register(body: Register):
 @app.post("/v1/auth/login", response_model=Token)
 async def gw_login(body: Login):
     """Login with email and password to get authentication token"""
-    async with httpx.AsyncClient(follow_redirects=True) as c:
-        r = await c.post(f"{os.getenv('AUTH_SVC','http://localhost:8003')}/v1/auth/login", json=body.model_dump())
+    async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as c:
+        r = await c.post(f"{AUTH_SVC}/v1/auth/login", json=body.model_dump())
         r.raise_for_status(); return r.json()
 
 # ---------- Users (crear sin auth; leer con auth si quieres) ----------
