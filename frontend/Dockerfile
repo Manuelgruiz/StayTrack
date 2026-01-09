@@ -26,7 +26,7 @@ RUN echo 'server { \
     # Proxy API requests to the gateway container \
     # This avoids CORS issues and keeps everything on port 80 \
     location /v1 { \
-        resolver 127.0.0.11 valid=30s; \
+        resolver RENDER_RESOLVER_IP valid=30s; \
         set $backend_service http://staytrack-gateway:8000; \
         proxy_pass $backend_service; \
         proxy_set_header Host $host; \
@@ -37,4 +37,6 @@ RUN echo 'server { \
 }' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# Este comando busca la IP del DNS de Render e inicia Nginx
+CMD ["sh", "-c", "export RESOLVER_IP=$(grep nameserver /etc/resolv.conf | head -n1 | awk '{print $2}') && sed -i \"s/RENDER_RESOLVER_IP/$RESOLVER_IP/g\" /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
