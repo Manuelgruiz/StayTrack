@@ -116,7 +116,7 @@ services:
       - key: CATALOG_SVC
         value: http://catalog-service
 
-  # Frontend
+  # Frontend (Vite + Nginx)
   - type: web
     name: staytrack-frontend
     plan: free
@@ -124,7 +124,4 @@ services:
     rootDir: ./frontend
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: staytrack-gateway
-          property: host
+        value: https://staytrack-gateway.onrender.com
