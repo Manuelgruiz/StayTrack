@@ -28,7 +28,7 @@ services:
           name: staytrack-db
           property: connectionString
       - key: USER_SVC_URL
-        value: http://user-service
+        value: http://user-service:8000
 
   # Microservicio: User
   - type: web
@@ -104,19 +104,19 @@ services:
     envVars:
       - fromGroup: staytrack-shared
       - key: AUTH_SVC
-        value: http://auth-service
+        value: http://auth-service:8000
       - key: USER_SVC
-        value: http://user-service
+        value: http://user-service:8000
       - key: TRACKER_SVC
-        value: http://tracker-service
+        value: http://tracker-service:8000
       - key: GOALS_SVC
-        value: http://goals-service
+        value: http://goals-service:8000
       - key: STATS_SVC
-        value: http://stats-service
+        value: http://stats-service:8000
       - key: CATALOG_SVC
-        value: http://catalog-service
+        value: http://catalog-service:8000
 
-  # Frontend (Vite + Nginx)
+  # Frontend
   - type: web
     name: staytrack-frontend
     plan: free
@@ -124,4 +124,7 @@ services:
     rootDir: ./frontend
     envVars:
       - key: VITE_API_URL
-        value: https://staytrack-gateway.onrender.com
+        fromService:
+          type: web
+          name: staytrack-gateway
+          property: host
