@@ -12,6 +12,11 @@ CATALOG_SVC = os.getenv("CATALOG_SVC", "http://localhost:8006")
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
 JWT_ALG = os.getenv("JWT_ALG", "HS256")
 
+print(f"DEBUG: GATEWAY_CONFIG: USER_SVC={USER_SVC}")
+print(f"DEBUG: GATEWAY_CONFIG: AUTH_SVC={os.getenv('AUTH_SVC')}")
+print(f"DEBUG: GATEWAY_CONFIG: TRACKER_SVC={TRACKER_SVC}")
+
+
 app = FastAPI(title="StayTrack Gateway")
 
 
@@ -111,13 +116,20 @@ async def gw_login(body: Login):
 async def gw_create_user(body: UserCreate):
     """Create a new user"""
     async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as c:
-        r = await c.post(f"{USER_SVC}/v1/users", json=body.model_dump())
+        url = f"{USER_SVC}/v1/users"
+        print(f"DEBUG: Calling {url}")
+        try:
+            r = await c.post(url, json=body.model_dump())
+        except Exception as e:
+            print(f"ERROR: Failed to connect to {url}: {str(e)}")
+            raise
         if r.is_error:
             try:
                 raise HTTPException(status_code=r.status_code, detail=r.json())
             except Exception:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
         return r.json()
+
 
 
 @app.get("/v1/users/{user_id}", response_model=User)

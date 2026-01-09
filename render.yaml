@@ -116,6 +116,8 @@ services:
       - key: CATALOG_SVC
         value: http://catalog-service:8000
 
+
+
   # Frontend
   - type: web
     name: staytrack-frontend
