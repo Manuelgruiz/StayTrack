@@ -12,6 +12,11 @@ export async function addFood(userId: number, body: {
   return data;
 }
 
+export async function getFoods(userId: number) {
+  const { data } = await api.get(`/v1/users/${userId}/foods`);
+  return data;
+}
+
 export async function addExercise(userId: number, body: {
   date: string;
   exercise_name: string;
@@ -19,5 +24,10 @@ export async function addExercise(userId: number, body: {
   calories_burned: number;
 }) {
   const { data } = await api.post(`/v1/users/${userId}/exercises`, body);
+  return data;
+}
+
+export async function getExercises(userId: number) {
+  const { data } = await api.get(`/v1/users/${userId}/exercises`);
   return data;
 }

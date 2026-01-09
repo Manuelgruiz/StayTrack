@@ -40,3 +40,8 @@ export function currentUserId(): number | null {
   const sub = localStorage.getItem("st_uid");
   return sub ? Number(sub) : null;
 }
+
+export async function getUserProfile(userId: number) {
+  const { data } = await api.get(`/v1/users/${userId}`);
+  return data;
+}

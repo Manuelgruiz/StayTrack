@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
-import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
+import { register } from "../api/auth";
+import toast from 'react-hot-toast';
 
 export default function RegisterForm() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     email: "",
+    password: "",
     age: "",
     weight: "",
     height: "",
   });
-  const [ok, setOk] = useState("");
-  const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -20,22 +22,21 @@ export default function RegisterForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setErr("");
-    setOk("");
     setLoading(true);
     try {
-      const payload = {
+      await register({
         name: form.name,
         email: form.email,
+        password: form.password,
         age: Number(form.age),
         weight: Number(form.weight),
         height: Number(form.height),
-      };
-      const res = await api.post("/users/", payload);
-      setOk(`User created: ${res.data.name}`);
-      setForm({ name: "", email: "", age: "", weight: "", height: "" });
+      });
+      toast.success("Account created! Logging you in...");
+      setTimeout(() => navigate("/dashboard"), 1500);
     } catch (e: any) {
-      setErr("Error creating user");
+      console.error(e);
+      toast.error(e.response?.data?.detail || "Error creating user");
     } finally {
       setLoading(false);
     }
@@ -44,68 +45,115 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white rounded-2xl p-6 shadow-soft w-full max-w-md"
+      autoComplete="off"
+      className="bg-white rounded-3xl p-8 shadow-xl w-full max-w-lg border border-gray-100"
     >
-      <h2 className="text-xl font-semibold mb-1">Create account</h2>
-      <p className="text-sm text-gray-500 mb-4">Start tracking your progress</p>
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Create Account</h2>
+        <p className="text-gray-500 mt-1">Join us to start your journey</p>
+      </div>
 
-      {ok && <div className="text-green-600 text-sm mb-3">{ok}</div>}
-      {err && <div className="text-red-600 text-sm mb-3">{err}</div>}
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input
+            name="name"
+            placeholder="John Doe"
+            value={form.name}
+            onChange={onChange}
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+            required
+            autoComplete="off"
+          />
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <input
-          name="name"
-          placeholder="Name"
-          value={form.name}
-          onChange={onChange}
-          className="p-3 rounded-xl border border-black/10 outline-none focus:ring-2 focus:ring-fitnessAccent"
-          required
-        />
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={onChange}
-          className="p-3 rounded-xl border border-black/10 outline-none focus:ring-2 focus:ring-fitnessAccent"
-          required
-        />
-        <input
-          name="age"
-          type="number"
-          placeholder="Age"
-          value={form.age}
-          onChange={onChange}
-          className="p-3 rounded-xl border border-black/10 outline-none focus:ring-2 focus:ring-fitnessAccent"
-          required
-        />
-        <input
-          name="weight"
-          type="number"
-          placeholder="Weight (kg)"
-          value={form.weight}
-          onChange={onChange}
-          className="p-3 rounded-xl border border-black/10 outline-none focus:ring-2 focus:ring-fitnessAccent"
-          required
-        />
-        <input
-          name="height"
-          type="number"
-          placeholder="Height (cm)"
-          value={form.height}
-          onChange={onChange}
-          className="p-3 rounded-xl border border-black/10 outline-none focus:ring-2 focus:ring-fitnessAccent md:col-span-2"
-          required
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <input
+            name="email"
+            type="email"
+            placeholder="john@example.com"
+            value={form.email}
+            onChange={onChange}
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+            required
+            autoComplete="new-email"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            value={form.password}
+            onChange={onChange}
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+            required
+            minLength={6}
+            autoComplete="new-password"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+            <input
+              name="age"
+              type="number"
+              placeholder="25"
+              value={form.age}
+              onChange={onChange}
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+            <input
+              name="weight"
+              type="number"
+              placeholder="70"
+              value={form.weight}
+              onChange={onChange}
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+            <input
+              name="height"
+              type="number"
+              placeholder="175"
+              value={form.height}
+              onChange={onChange}
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+              required
+            />
+          </div>
+        </div>
       </div>
 
       <button
+        type="submit"
         disabled={loading}
-        className="w-full mt-4 py-3 rounded-full bg-fitnessAccent text-white hover:brightness-110 transition flex items-center justify-center gap-2"
+        className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 flex items-center justify-center gap-2"
       >
-        <UserPlus size={18} />
-        {loading ? "Creating..." : "Create account"}
+        <UserPlus size={20} />
+        {loading ? "Creating Account..." : "Sign Up"}
       </button>
+
+      <p className="mt-6 text-center text-sm text-gray-500">
+        Already have an account?{" "}
+        <span
+          onClick={() => navigate("/login")}
+          className="text-blue-600 font-semibold cursor-pointer hover:underline"
+        >
+          Log in
+        </span>
+      </p>
     </form>
   );
 }
