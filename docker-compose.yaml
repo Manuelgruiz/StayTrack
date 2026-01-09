@@ -59,6 +59,8 @@ services:
     restart: always
     environment:
       STATS_DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
+      TRACKER_SVC: http://tracker-service:8000
+      GOALS_SVC: http://goals-service:8000
     depends_on:
       - db
     networks:
