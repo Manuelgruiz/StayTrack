@@ -21,9 +21,14 @@ RUN echo 'server { \
         try_files $uri $uri/ /index.html; \
     } \
     location /v1 { \
-        proxy_pass ${VITE_API_URL}; \
-        proxy_set_header Host $host; \
+        resolver 8.8.8.8 1.1.1.1 valid=30s; \
+        set $backend "${VITE_API_URL}"; \
+        proxy_pass $backend; \
+        proxy_ssl_server_name on; \
+        proxy_set_header Host $proxy_host; \
         proxy_set_header X-Real-IP $remote_addr; \
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
+        proxy_set_header X-Forwarded-Proto $scheme; \
     } \
 }' > /etc/nginx/conf.d/config.template
 
