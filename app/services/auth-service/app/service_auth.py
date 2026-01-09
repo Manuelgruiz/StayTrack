@@ -20,7 +20,7 @@ async def register(db: Session, body: schemas.Register) -> str:
         raise ValueError("EMAIL_EXISTS")
 
     # 2) crea usuario en User Service
-    async with httpx.AsyncClient(follow_redirects=True, timeout=10.0) as c:
+    async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as c:
         r = await c.post(f"{USER_SVC}/v1/users", json={
             "name": body.name, "email": body.email,
             "age": body.age, "weight": body.weight, "height": body.height
