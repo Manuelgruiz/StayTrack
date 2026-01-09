@@ -106,7 +106,8 @@ services:
       - key: AUTH_SVC
         value: http://auth-service:8000
       - key: USER_SVC
-        value: http://user-service:8000
+        value: https://user-service-ktj0.onrender.com
+
       - key: TRACKER_SVC
         value: http://tracker-service:8000
       - key: GOALS_SVC
