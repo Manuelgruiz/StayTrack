@@ -104,18 +104,35 @@ services:
     envVars:
       - fromGroup: staytrack-shared
       - key: AUTH_SVC
-        value: http://auth-service:8000
+        fromService:
+          type: web
+          name: auth-service
+          property: url
       - key: USER_SVC
-        value: https://user-service-ktj0.onrender.com
-
+        fromService:
+          type: web
+          name: user-service
+          property: url
       - key: TRACKER_SVC
-        value: http://tracker-service:8000
+        fromService:
+          type: web
+          name: tracker-service
+          property: url
       - key: GOALS_SVC
-        value: http://goals-service:8000
+        fromService:
+          type: web
+          name: goals-service
+          property: url
       - key: STATS_SVC
-        value: http://stats-service:8000
+        fromService:
+          type: web
+          name: stats-service
+          property: url
       - key: CATALOG_SVC
-        value: http://catalog-service:8000
+        fromService:
+          type: web
+          name: catalog-service
+          property: url
 
 
 
