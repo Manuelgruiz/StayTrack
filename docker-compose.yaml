@@ -1,5 +1,4 @@
 services:
-  # ----------- Database -----------
   db:
     image: postgres:16-alpine
     restart: always
@@ -12,9 +11,10 @@ services:
     networks:
       - staytrack-net
 
-  # ----------- Services -----------
   auth-service:
-    build: ./app/services/auth-service
+    build: 
+      context: .
+      dockerfile: ./app/services/auth-service/Dockerfile
     restart: always
     environment:
       DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
@@ -27,7 +27,9 @@ services:
       - staytrack-net
 
   user-service:
-    build: ./app/services/user-service
+    build: 
+      context: .
+      dockerfile: ./app/services/user-service/Dockerfile
     restart: always
     environment:
       DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
@@ -37,7 +39,9 @@ services:
       - staytrack-net
 
   catalog-service:
-    build: ./app/services/catalog-service
+    build: 
+      context: .
+      dockerfile: ./app/services/catalog-service/Dockerfile
     restart: always
     environment:
       DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
@@ -47,7 +51,9 @@ services:
       - staytrack-net
 
   goals-service:
-    build: ./app/services/goals-service
+    build: 
+      context: .
+      dockerfile: ./app/services/goals-service/Dockerfile
     restart: always
     environment:
       DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
@@ -57,7 +63,9 @@ services:
       - staytrack-net
 
   stats-service:
-    build: ./app/services/stats-service
+    build: 
+      context: .
+      dockerfile: ./app/services/stats-service/Dockerfile
     restart: always
     environment:
       DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
@@ -67,7 +75,9 @@ services:
       - staytrack-net
 
   tracker-service:
-    build: ./app/services/tracker-service
+    build: 
+      context: .
+      dockerfile: ./app/services/tracker-service/Dockerfile
     restart: always
     environment:
       DATABASE_URL: postgresql://${DB_USER:-staytrack}:${DB_PASSWORD:-staytrack_pass}@db:5432/${DB_NAME:-staytrack_db}
@@ -76,9 +86,10 @@ services:
     networks:
       - staytrack-net
 
-  # ----------- Gateway -----------
   gateway:
-    build: ./app/gateway
+    build: 
+      context: .
+      dockerfile: ./app/gateway/Dockerfile
     restart: always
     environment:
       AUTH_SVC: http://auth-service:8003
@@ -94,9 +105,10 @@ services:
     networks:
       - staytrack-net
 
-  # ----------- Frontend -----------
   frontend:
-    build: ./frontend
+    build: 
+      context: .
+      dockerfile: ./frontend/Dockerfile
     restart: always
     ports:
       - "80:80"
