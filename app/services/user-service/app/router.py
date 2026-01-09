@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from pydantic import ValidationError
 from . import schemas
 from .db import get_db
+from .logger import logger
 from .service import (
     create_user as svc_create_user, 
     get_user as svc_get_user, 
@@ -13,9 +15,13 @@ from .service import (
 router = APIRouter(prefix="/v1/users", tags=["users"])
 
 @router.post("", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
-def create_user(body: schemas.UserCreate, db: Session = Depends(get_db)):
+async def create_user(request: Request, body: schemas.UserCreate, db: Session = Depends(get_db)):
     try:
+        logger.info("create_user_request", extra={"body": body.model_dump()})
         return svc_create_user(db, body)
+    except ValidationError as e:
+        logger.error("validation_error", extra={"error": str(e)})
+        raise HTTPException(status_code=422, detail=str(e))
     except IntegrityError:
         raise HTTPException(status_code=409, detail="Email already exists")
 

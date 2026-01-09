@@ -21,12 +21,14 @@ async def register(db: Session, body: schemas.Register) -> str:
 
     # 2) crea usuario en User Service
     async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as c:
-        r = await c.post(f"{USER_SVC}/v1/users", json={
+        payload = {
             "name": body.name, "email": body.email,
             "age": body.age, "weight": body.weight, "height": body.height
-        })
+        }
+        logger.info("calling_user_service", extra={"payload": payload})
+        r = await c.post(f"{USER_SVC}/v1/users", json=payload)
         if r.status_code not in (200, 201):
-            logger.warning("user_service_error", extra={"status": r.status_code, "text": r.text})
+            logger.warning("user_service_error", extra={"status": r.status_code, "text": r.text, "payload": payload})
             raise RuntimeError("USER_SERVICE_ERROR")
         user = r.json()
 
