@@ -129,6 +129,31 @@ Se simulan 50 usuarios concurrentes accediendo al endpoint público del Gateway.
 *   **Objetivo:** Verificar latencia media y tasa de errores.
 *   **Resultado esperado:** El Gateway debe mantener tiempos de respuesta estables (<500ms) y no arrojar errores 5xx bajo carga moderada.
 
+### Resultados de la Prueba (Locust)
+
+Se ha ejecutado una prueba de estrés contra la aplicación desplegada en Render con los siguientes parámetros:
+*   **Usuarios concurrentes:** 10
+*   **Tasa de spawn:** 5 usuarios/segundo
+*   **Duración:** 20 segundos
+*   **Comando:** `locust --headless --users 10 --spawn-rate 5 -H https://staytrack-gateway.onrender.com --run-time 20s`
+
+**Métricas obtenidas:**
+```text
+Type     Name      # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------||-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /docs      183          0     |    220     230    870    230  |   ...
+GET      /health     62          0     |    230     230    900    240  |   ...
+--------||-------|-------------|-------|-------|-------|-------|--------|-----------
+Aggregated          357          0     |    238     188    900    230  |   17.96     0.00
+```
+
+*   **Peticiones totales:** 357
+*   **Latencia media:** 238ms
+*   **Tasa de error:** 0% (Éxito total)
+*   **Percentil 95%:** 280ms
+
+Esto confirma que el despliegue es estable y responde rápidamente desde la ubicación de prueba.
+
 
 
 ---
