@@ -5,14 +5,19 @@
 **Student:** Manuel García Ruiz  
 **Email:** [manuelgruiz22@gmail.com](mailto:manuelgruiz22@gmail.com)  
 **Course:** Cloud Computing: Fundamentals and Infrastructures — 2025/26 (COMMON)  
-**Milestone:** Milestone 1  
+**Milestone:** Milestone 5  
 
 ---
 
 ## 🧩 Overview
 
 **StayTrack** is a cloud-oriented application designed to **track and visualize healthy habits** such as meals, workouts, hydration, and other customizable activities.  
-The goal of this first milestone is to **define the project and architecture**, prepare the documentation, and lay the groundwork for future cloud deployment.
+The goal of this project is to build a robust microservices architecture and deploy it to a PaaS provider with full observability.
+
+## 🚀 Deployment & Documentation
+
+- **Deployed App URL:** [https://staytrack-frontend.onrender.com](https://staytrack-frontend.onrender.com)
+- **Milestone 5 (Deployment):** [docs/hitos/hito5.md](./docs/hitos/hito5.md)
 
 ---
 
@@ -32,13 +37,13 @@ The goal of this first milestone is to **define the project and architecture**, 
 - **Backend:** FastAPI (Python 3.12), automatic OpenAPI/Swagger  
 - **Database:** PostgreSQL (SQLAlchemy 2 + Alembic for migrations)  
 - **Schemas/Validation:** Pydantic v2 / pydantic-settings  
-- **Frontend:** React + Vite (TypeScript) *(planned)*  
-- **Containers:** Docker & docker-compose (API + DB services) *(planned)*  
-- **Testing:** Pytest (API), React Testing Library *(planned)*  
-- **Lint/Format:** Ruff, Black, mypy *(planned)*  
-- **CI/CD:** GitHub Actions *(planned)*  
+- **Frontend:** React + Vite (TypeScript)
+- **Containers:** Docker & docker-compose (API + DB services)
+- **Testing:** Pytest (API), React Testing Library
+- **Lint/Format:** Ruff, Black, mypy
+- **CI/CD:** GitHub Actions  
 
-> For **Milestone 1**, the repository mainly contains **documentation**, including a clear definition of the project architecture and technology stack.
+> For **Milestone 5**, the application is fully deployed on Render with automated CI/CD and monitoring.
 
 ---
 
