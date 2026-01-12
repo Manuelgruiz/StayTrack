@@ -18,7 +18,18 @@
 ## Introducción
 El objetivo de este hito es llevar la arquitectura de microservicios desarrollada en los hitos anteriores a un entorno de producción en la nube. Se busca automatizar el despliegue, garantizar que la infraestructura sea reproducible y establecer mecanismos de monitorización para asegurar la fiabilidad del sistema.
 
-URL del despliegue: **[https://staytrack-frontend.onrender.com](https://staytrack-frontend.onrender.com)** (Frontend) | **[https://staytrack-gateway.onrender.com/docs](https://staytrack-gateway.onrender.com/docs)** (API Backend)
+### Enlaces a los Despliegues
+
+A continuación se encuentran los enlaces a cada uno de los microservicios y aplicaciones desplegadas en Render:
+
+*   **Frontend:** [https://staytrack-frontend-m4hf.onrender.com](https://staytrack-frontend-m4hf.onrender.com)
+*   **API Gateway:** [https://staytrack-gateway.onrender.com](https://staytrack-gateway.onrender.com) ([Docs](https://staytrack-gateway.onrender.com/docs))
+*   **Auth Service:** [https://auth-service-3bd9.onrender.com](https://auth-service-3bd9.onrender.com)
+*   **User Service:** [https://user-service-ktj0.onrender.com](https://user-service-ktj0.onrender.com)
+*   **Tracker Service:** [https://tracker-service-u5my.onrender.com](https://tracker-service-u5my.onrender.com)
+*   **Goals Service:** [https://goals-service-2ldb.onrender.com](https://goals-service-2ldb.onrender.com)
+*   **Stats Service:** [https://stats-service-oghh.onrender.com](https://stats-service-oghh.onrender.com)
+*   **Catalog Service:** [https://catalog-service-hpez.onrender.com](https://catalog-service-hpez.onrender.com)
 
 ---
 
